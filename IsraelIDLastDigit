@@ -21,7 +21,7 @@ int main() {
     
     printf("Please enter the letter C for calculating CheckDigit and the letter V for validating an ID by its CheckDigit:\n");
     
-    if (scanf(" %c", &Check)<1) {
+    if (scanf("%c", &Check)<1) {
         printf("\nERROR");
         return 1;
     }
@@ -43,7 +43,7 @@ int main() {
         
         for (int i=0; i<7; i++) { //performs operations on each digit.
             
-            if (scanf(" %c", &DigitC)<1) { // The program gets a digit.
+            if (scanf("%c", &DigitC)<1) { // The program gets a digit.
                 printf("\nERROR");
                 return 1;
             }
@@ -105,7 +105,7 @@ int main() {
             
         }
         
-        if (scanf(" %c", &DigitC)<1) {
+        if (scanf("%c", &DigitC)<1) {
             printf("\nERROR");
             return 1;
         }
