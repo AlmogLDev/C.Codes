@@ -27,6 +27,15 @@
 #define END 0
 #define STILL_PLAYING 0
 #define EMPTY 0
+#define ERROR 1
+#define INVALID -1
+#define LAST_STONE 1
+#define INITIALIZED 0
+#define PROBLEM 2
+#define VALID 1
+#define END_OF_GAME 1
+#define ONE 1
+#define TWO 2
 
 /* PRINTING FUNCTIONS DECLARATIONS*/
 void PrintWelcomeMessage();
@@ -38,6 +47,18 @@ void PrintInvalidValue();
 void PrintEmptyCell();
 void PrintWinningMessage(int winner);
 void InitializeGameBoard(int gameBoard[NUM_OF_HOLES]);
+int CheckInput (bool Empty, bool CurPlayerInd, int gameBoard[NUM_OF_HOLES]
+                ,int Player);
+bool MoveStones (int Stones, int gameBoard[NUM_OF_HOLES], int Counter,
+                 int Player);
+int CalcPlayerStones (int gameBoard[NUM_OF_HOLES], int Player);
+bool CheckExtraTurn (int Stones, int Player, int Counter);
+int CheckNextJump (int Counter, int Player);
+int CheckWinner (int gameBoard[NUM_OF_HOLES]);
+int FinalBoardStat (int SumP1, int SumP2, int gameBoard[NUM_OF_HOLES]);
+int CheckNextTurn (int Player, bool ExtraTurn);
+int GameProcess (int gameBoard[NUM_OF_HOLES]);
+void PrintPlayerAndCell(int Player);
 
 
 /*-------------------------------------------------------------------------
@@ -45,207 +66,61 @@ void InitializeGameBoard(int gameBoard[NUM_OF_HOLES]);
  -------------------------------------------------------------------------*/
 int main()
 {
-    int Player=1, ChosenCell=0, Stones=0, Counter=0, SumP1=0, SumP2=0, Winner=0;
-    bool ExtraTurn = false, Empty=true, CurPlayerInd=false;
-    int gameBoard[NUM_OF_HOLES] = { 0 };
+    int gameBoard[NUM_OF_HOLES] = { INITIALIZED };
     InitializeGameBoard(gameBoard);
     PrintWelcomeMessage();
     PrintBoard(gameBoard);
-    
-    while (Winner == 0) {
-        PrintTurn(Player);
-        if (Player == 1) {
-            PrintChooseCell();
-
-            while (Empty==true || CurPlayerInd==false) {
-                
-                if (scanf("%d", &ChosenCell)!=1) {
-                    PrintScanfFailure();
-                    return 1;
-                }
-                if (ChosenCell>=LAST_HOLE_P1 || ChosenCell<FIRST_HOLE_P1) {
-                    PrintInvalidValue();
-                    continue;
-                }else
-                    CurPlayerInd=true;
-                
-                if (gameBoard[ChosenCell]==EMPTY) {
-                    PrintEmptyCell();
-                    continue;
-                }else
-                    Empty=false;
-                
-            }
-            
-        }else {
-            PrintChooseCell();
-            while (Empty==true || CurPlayerInd==false) {
-                
-                if (scanf("%d", &ChosenCell)!=1) {
-                    PrintScanfFailure();
-                    return 1;
-                }
-                if (ChosenCell<FIRST_HOLE_P2 || ChosenCell>=LAST_HOLE_P2) {
-                    PrintInvalidValue();
-                    continue;
-                }else
-                    CurPlayerInd=true;
-                
-                if (gameBoard[ChosenCell]==EMPTY) {
-                    PrintEmptyCell();
-                    continue;
-                }else
-                    Empty=false;
-            }
-        }
-        Empty = true;
-        CurPlayerInd = false;
-        
-        Stones = gameBoard[ChosenCell];
-        gameBoard[ChosenCell] = 0;
-        Counter = ChosenCell+1;
-        
-        
-        while (Stones > 0) {
-            gameBoard[Counter]++;
-            if (Stones == 1 && gameBoard[Counter]==1 && Counter>=0 && Counter<=5 && Player==1) {
-                gameBoard[Counter]--;
-                gameBoard[6] += gameBoard[Counter+2*(6-Counter)]+1;
-                gameBoard[Counter+2*(6-Counter)] = 0;
-            }else{
-                if (Stones == 1 && gameBoard[Counter]==1 && Counter>=7 && Counter<=12 && Player==2) {
-                    gameBoard[Counter]--;
-                    gameBoard[13] += gameBoard[Counter-2*(Counter-6)]+1;
-                    gameBoard[Counter-2*(Counter-6)] = 0;
-                }
-            }
-            
-            if ((Stones==1 && Player==1 && Counter==6)||(Stones==1 && Player==2 && Counter==13))
-                ExtraTurn = true;
-            
-            
-            
-            if (Player==2 && Counter==5)
-                Counter += 2;
-            else {
-                if ((Counter==13) || (Player==1 && Counter==12))
-                    Counter = 0;
-                else
-                    Counter++;
-            }
-            Stones--;
-        }
-        Counter = 0;
-        
-        
-        for (int i=0; i<6; i++) {
-            SumP1+=gameBoard[i];
-        }
-        for (int j=7; j<13; j++) {
-            SumP2+=gameBoard[j];
-        }
-        
-        if (SumP1==0 && SumP2>0) {
-            gameBoard[6]+= SumP2;
-            for (int i=0; i<6; i++)
-                gameBoard[i]=0;
-
-            for (int j=7; j<13; j++)
-                gameBoard[j]=0;
-
-            
-            if (gameBoard[6]>gameBoard[13]) {
-                Winner = 1;
-                PrintBoard(gameBoard);
-                PrintWinningMessage(Winner);
-                return END;
-            }else{
-                if (gameBoard[6]<gameBoard[13]) {
-                    Winner = 2;
-                    PrintBoard(gameBoard);
-                    PrintWinningMessage(Winner);
-                    return END;
-                }else{
-                    Winner = NOBODY;
-                    PrintBoard(gameBoard);
-                    PrintWinningMessage(Winner);
-                    return END;
-                }
-            }
-            
-        }else{
-            if (SumP2==0 && SumP1>0) {
-                gameBoard[13]+= SumP1;
-                for (int i=0; i<6; i++)
-                    gameBoard[i]=0;
-         
-                for (int j=7; j<13; j++)
-                    gameBoard[j]=0;
-         
-                
-                if (gameBoard[6]>gameBoard[13]) {
-                    Winner = 1;
-                    PrintBoard(gameBoard);
-                    PrintWinningMessage(Winner);
-                    return END;
-                }else{
-                    if (gameBoard[6]<gameBoard[13]) {
-                        Winner = 2;
-                        PrintBoard(gameBoard);
-                        PrintWinningMessage(Winner);
-                        return END;
-                    }else{
-                        Winner = NOBODY;
-                        PrintBoard(gameBoard);
-                        PrintWinningMessage(Winner);
-                        return END;
-                    }
-                }
-                
-            }else{
-                if (SumP2==0 && SumP1==0){
-                    
-                    if (gameBoard[6]>gameBoard[13]) {
-                        Winner = 1;
-                        PrintBoard(gameBoard);
-                        PrintWinningMessage(Winner);
-                        return END;
-                    }else{
-                        if (gameBoard[6]<gameBoard[13]) {
-                            Winner = 2;
-                            PrintBoard(gameBoard);
-                            PrintWinningMessage(Winner);
-                            return END;
-                        }else{
-                            Winner = NOBODY;
-                            PrintBoard(gameBoard);
-                            PrintWinningMessage(Winner);
-                            return END;
-                        }
-                    }
-                    
-                }else{
-                    PrintBoard(gameBoard);
-                }
-            }
-        }
-        
-        SumP1 = 0;
-        SumP2 = 0;
-        
-         if (Player==1 && ExtraTurn==false)
-            Player = 2;
-         else{
-            if (Player==2 && ExtraTurn==false)
-                Player = 1;
-         }
-        
-        ExtraTurn = false;
+    if (GameProcess(gameBoard)) {
+        return ERROR;
     }
-    
     return END;
 }
 
+// print the player who play and to choose cell.
+void PrintPlayerAndCell (int Player){
+    PrintTurn(Player);
+    PrintChooseCell();
+}
+
+// the process of the game from the beginnig until the end (23).
+int GameProcess(int gameBoard[NUM_OF_HOLES]){
+    int Player=PLAYER1, ChosenCell=INITIALIZED, Stones=INITIALIZED,
+    Counter=INITIALIZED, SumP1=INITIALIZED, SumP2=INITIALIZED,
+    Winner=INITIALIZED;
+    bool ExtraTurn = false, Empty=true, CurPlayerInd=false;
+    
+    while (Winner == STILL_PLAYING) {
+        PrintPlayerAndCell(Player);
+        ChosenCell = CheckInput(Empty, CurPlayerInd, gameBoard, Player);
+        if (ChosenCell==INVALID) {
+            return ERROR;
+        }
+        
+        Stones = gameBoard[ChosenCell];
+        gameBoard[ChosenCell] = EMPTY;
+        Counter = ChosenCell+ONE;
+        
+        ExtraTurn = MoveStones(Stones, gameBoard, Counter, Player);
+        
+        SumP1 = CalcPlayerStones(gameBoard, PLAYER1);
+        SumP2 = CalcPlayerStones(gameBoard, PLAYER2);
+        
+        if (FinalBoardStat(SumP1, SumP2, gameBoard)) {
+            Winner = CheckWinner(gameBoard);
+            return END;
+        }else{
+            PrintBoard(gameBoard);
+        }
+        SumP1 = INITIALIZED;
+        SumP2 = INITIALIZED;
+        
+        Player = CheckNextTurn(Player, ExtraTurn);
+        ExtraTurn = false;
+    }
+    return PROBLEM;
+}
+
+// Prepare the board to the start status (4).
 void InitializeGameBoard(int gameBoard[NUM_OF_HOLES]){
     for (int i = FIRST_HOLE_P1; i<LAST_HOLE_P1; i++) {
         gameBoard[i] = INITIAL_NUM_STONES;
@@ -255,6 +130,156 @@ void InitializeGameBoard(int gameBoard[NUM_OF_HOLES]){
     }
 }
 
+int CheckInput (bool Empty, bool CurPlayerInd, int gameBoard[NUM_OF_HOLES]
+                , int Player){//Validate that the input is valid. (16)
+    int ChosenCell=INITIALIZED;
+    while (Empty==true || CurPlayerInd==false) {
+        
+        if (scanf("%d", &ChosenCell)!= VALID) {
+            PrintScanfFailure();
+            return INVALID;
+        }
+        if (((ChosenCell>=LAST_HOLE_P1 || ChosenCell<FIRST_HOLE_P1) &&
+             Player==PLAYER1) || ((ChosenCell<FIRST_HOLE_P2 ||
+                                   ChosenCell>=LAST_HOLE_P2) &&
+                                  Player==PLAYER2)) {
+            PrintInvalidValue();
+            continue;
+        }else
+            CurPlayerInd=true;
+        
+        if (gameBoard[ChosenCell]==EMPTY) {
+            PrintEmptyCell();
+            continue;
+        }else
+            Empty=false;
+        
+    }
+    
+    return ChosenCell;
+}
+
+// move the stones from the chosen cell.(16)
+bool MoveStones (int Stones, int gameBoard[NUM_OF_HOLES],
+                 int Counter, int Player){
+    bool ExtraTurn = false;
+    while (Stones > EMPTY) {
+        gameBoard[Counter]++;
+        if (Stones == LAST_STONE && gameBoard[Counter]==LAST_STONE &&
+            Counter>=FIRST_HOLE_P1 && Counter<=(LAST_HOLE_P1-1) &&
+            Player==PLAYER1) {
+            gameBoard[Counter]--;
+            gameBoard[LAST_HOLE_P1] += gameBoard[Counter+
+                                TWO*(LAST_HOLE_P1-Counter)]+ONE;
+            gameBoard[Counter+TWO*(LAST_HOLE_P1-Counter)]=INITIALIZED;
+        }else{
+            if (Stones == LAST_STONE && gameBoard[Counter]==FIRST_HOLE_P1+
+                ONE&& Counter>=FIRST_HOLE_P2 && Counter<=LAST_HOLE_P2-ONE
+                && Player==PLAYER2) {
+                gameBoard[Counter]--;
+                gameBoard[LAST_HOLE_P2] += gameBoard[Counter-
+                                    TWO*(Counter-LAST_HOLE_P1)]+ONE;
+                gameBoard[Counter-TWO*(Counter-LAST_HOLE_P1)]=INITIALIZED;
+            }
+        }
+        
+        ExtraTurn = CheckExtraTurn(Stones, Player, Counter);
+        Counter=CheckNextJump(Counter, Player);
+        Stones--;
+    }
+    return ExtraTurn;
+}
+
+// check if the player earn the next turn too.(3)
+bool CheckExtraTurn (int Stones, int Player, int Counter){
+    if ((Stones==LAST_STONE && Player==PLAYER1 && Counter==LAST_HOLE_P1)||
+        (Stones==LAST_STONE && Player==PLAYER2 && Counter==LAST_HOLE_P2))
+        return true;
+    return false;
+}
+//calculate the num of stones the player has without the home cell. (8)
+int CalcPlayerStones (int gameBoard[NUM_OF_HOLES], int Player){
+    int Sum=INITIALIZED;
+    if (Player==PLAYER1) {
+        for (int i=FIRST_HOLE_P1; i<LAST_HOLE_P1; i++) {
+            Sum+=gameBoard[i];
+        }
+    }else{
+        for (int i=FIRST_HOLE_P2; i<LAST_HOLE_P2; i++) {
+            Sum+=gameBoard[i];
+        }
+    }
+    return Sum;
+}
+
+// Calculate the next cell to put stone. (7)
+int CheckNextJump (int Counter, int Player){
+    if (Player==PLAYER2 && Counter==LAST_HOLE_P1-ONE)
+        return (Counter+TWO);
+    else {
+        if ((Counter==LAST_HOLE_P2) || (Player==PLAYER1 &&
+                                    Counter==LAST_HOLE_P2-ONE))
+            return FIRST_HOLE_P1;
+        else
+            return (Counter+ONE);
+    }
+}
+
+// Checkes who wins the game or if it is a tie. (17)
+int CheckWinner (int gameBoard[NUM_OF_HOLES]){
+    int Winner = INITIALIZED;
+    if (gameBoard[LAST_HOLE_P1]>gameBoard[LAST_HOLE_P2]) {
+        Winner = PLAYER1;
+        PrintBoard(gameBoard);
+        PrintWinningMessage(Winner);
+    }else{
+        if (gameBoard[LAST_HOLE_P1]<gameBoard[LAST_HOLE_P2]) {
+            Winner = PLAYER2;
+            PrintBoard(gameBoard);
+            PrintWinningMessage(Winner);
+        }else{
+            Winner = NOBODY;
+            PrintBoard(gameBoard);
+            PrintWinningMessage(Winner);
+        }
+    }
+    return Winner;
+}
+
+//change the board to the final status.(15)
+int FinalBoardStat (int SumP1, int SumP2, int gameBoard[NUM_OF_HOLES]){
+    
+    if (SumP1==EMPTY && SumP2>EMPTY) {
+        
+        gameBoard[LAST_HOLE_P1]+= SumP2;
+        for (int j=FIRST_HOLE_P2; j<LAST_HOLE_P2; j++)
+            gameBoard[j]=INITIALIZED;
+        return END_OF_GAME;
+    }else{
+        if (SumP2==EMPTY && SumP1>EMPTY) {
+            gameBoard[LAST_HOLE_P2]+= SumP1;
+            for (int i=FIRST_HOLE_P1; i<LAST_HOLE_P1; i++)
+                gameBoard[i]=INITIALIZED;
+            return END_OF_GAME;
+        }else{
+            if (SumP1==EMPTY && SumP2==EMPTY) {
+                return END_OF_GAME;
+            }
+        }
+    }
+    return STILL_PLAYING;
+}
+
+//Check who play the next turn.(6)
+int CheckNextTurn (int Player, bool ExtraTurn){
+    if (Player==PLAYER1 && ExtraTurn==false)
+        return PLAYER2;
+    else{
+        if (Player==PLAYER2 && ExtraTurn==false)
+            return PLAYER1;
+    }
+    return Player;
+}
 
 /* PRINTING FUNCTIONS */
 void PrintWelcomeMessage()
@@ -340,3 +365,4 @@ void PrintWinningMessage(int winner)
     
     printf("The winner is player %d!\n", winner);
 }
+
