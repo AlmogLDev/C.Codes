@@ -16,18 +16,18 @@
 #define YES 1
 #define NO 0
 #define END 0
-#define FIRSTLETTER 1
+#define FIRST_LETTER 1
 
 /*-------------------------------------------------------------------------
   The program choose the appropriate dragon from 3 dragons, and print his name.
  if none of them fit the conditions, the program will print that too.
  -------------------------------------------------------------------------*/
 
-void print_enter_enemy_name();
-void print_dragonA_sent();
-void print_dragonB_sent();
-void print_dragonC_sent();
-void print_no_dragon_sent();
+int print_enter_enemy_name();
+int print_dragonA_sent();
+int print_dragonB_sent();
+int print_dragonC_sent();
+int print_no_dragon_sent();
 
 char getLetter();
 int checkS(char Letter);
@@ -51,12 +51,6 @@ void getEnemyName(){
     int Sum = 0, Counter = 0, Mono=YES, CheckS = NO;
     
     Letter = getLetter();
-    // checks if the first letter is '!'
-    if (Letter == '!') {
-        print_no_dragon_sent();
-        return;
-    }
-    
     PreviousLetter = Letter;
     //get letters until the user enter '!'
     while (Letter != '!') {
@@ -114,31 +108,27 @@ int checkDragonC(int Counter, int CheckS){
                                                                            
 //Selects the best dragon according to requirements and print the result.
 void selectDragon(int Counter, int Sum, int Mono, int CheckS){
-    int DragonA=NO, DragonB=NO, DragonC = NO;
+    int DragonB=NO;
     
-    DragonA = checkDragonA(Counter, Sum);
     //Name with one letter isnt mono.
-    if (Counter>FIRSTLETTER) {
+    if (Counter>FIRST_LETTER) {
         DragonB = Mono;
     }
-    DragonC = checkDragonC(Counter, CheckS);
     
-    if (DragonC) {
+    if (checkDragonC(Counter, CheckS)) {
         print_dragonC_sent();
         return;
-    }else{
-        if (DragonB) {
-            print_dragonB_sent();
-            return;
-        }else{
-            if (DragonA) {
-                print_dragonA_sent();
-                return;
-            }
-            print_no_dragon_sent();
-            return;
-        }
     }
+    if (DragonB) {
+        print_dragonB_sent();
+        return;
+    }
+    if (checkDragonA(Counter, Sum)) {
+        print_dragonA_sent();
+        return;
+    }
+    print_no_dragon_sent();
+    return;
     
 }
 
@@ -153,22 +143,22 @@ int main()
     return END;
 }
 
-void print_enter_enemy_name(){
-    printf("Please enter enemy name:\n");
+int print_enter_enemy_name(){
+    return printf("Please enter enemy name:\n");
 }
 
-void print_dragonA_sent(){
-    printf("\nKhalisi sent dragonA into the battle!!!\n");
+int print_dragonA_sent(){
+   return printf("\nKhalisi sent dragonA into the battle!!!\n");
 }
 
-void print_dragonB_sent(){
-    printf("\nKhalisi sent dragonB into the battle!!!\n");
+int print_dragonB_sent(){
+   return printf("\nKhalisi sent dragonB into the battle!!!\n");
 }
 
-void print_dragonC_sent(){
-    printf("\nKhalisi sent dragonC into the battle!!!\n");
+int print_dragonC_sent(){
+    return printf("\nKhalisi sent dragonC into the battle!!!\n");
 }
 
-void print_no_dragon_sent(){
-    printf("\nNO Dragon has been sent into the battle!!!\n");
+int print_no_dragon_sent(){
+    return printf("\nNO Dragon has been sent into the battle!!!\n");
 }
