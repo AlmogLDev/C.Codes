@@ -19,7 +19,8 @@
 #define FIRST_LETTER 1
 
 /*-------------------------------------------------------------------------
-  The program choose the appropriate dragon from 3 dragons, and print his name.
+  The program choose the appropriate dragon from 3 dragons,
+ and print his name.
  if none of them fit the conditions, the program will print that too.
  -------------------------------------------------------------------------*/
 
@@ -34,7 +35,7 @@ int checkS(char Letter);
 void getEnemyName();
 void selectDragon(int Counter, int Sum, int Mono, int CheckS);
 int checkDragonA(int Counter, int Sum);
-int checkDragonB(char PreviousLetter, char Letter, int Mono, int Counter);
+int checkDragonB(char PreviousLetter, char Letter, int Mono);
 int checkDragonC(int Counter, int CheckS);
 
 //gets a letter from the user.
@@ -51,7 +52,6 @@ void getEnemyName(){
     int Sum = 0, Counter = 0, Mono=YES, CheckS = NO;
     
     Letter = getLetter();
-    PreviousLetter = Letter;
     //get letters until the user enter '!'
     while (Letter != '!') {
         //checks if one of the letters is 's'
@@ -59,7 +59,7 @@ void getEnemyName(){
             CheckS = YES;
         }
         //checks if the name is mono up.
-        Mono = checkDragonB(PreviousLetter, Letter, Mono, Counter);
+        Mono = checkDragonB(PreviousLetter, Letter, Mono);
         //save the value of the previous letter for comparison.
         PreviousLetter = Letter;
         // Calculates the sum of the ascii value of the letters
@@ -79,14 +79,12 @@ int checkDragonA(int Counter, int Sum){
 }
 
 // Checks if dragonB fits the conditions.
-int checkDragonB(char PreviousLetter, char Letter, int Mono, int Counter){
-    if (Counter>0 && Mono == YES && PreviousLetter<Letter) {
+int checkDragonB(char PreviousLetter, char Letter, int Mono){
+    
+    if (Mono && PreviousLetter<Letter){
         return YES;
-    }else{
-        if (!Counter) {
-            return YES;
-        }
     }
+    
     return NO;
 }
 
@@ -108,12 +106,7 @@ int checkDragonC(int Counter, int CheckS){
                                                                            
 //Selects the best dragon according to requirements and print the result.
 void selectDragon(int Counter, int Sum, int Mono, int CheckS){
-    int DragonB=NO;
-    
-    //Name with one letter isnt mono.
-    if (Counter>FIRST_LETTER) {
-        DragonB = Mono;
-    }
+    int DragonB=Mono;
     
     if (checkDragonC(Counter, CheckS)) {
         print_dragonC_sent();
