@@ -13,15 +13,15 @@
 
 /* put your #defines and typedefs here*/
 
-#define DEPNUM 10
+#define DEP_NUM 10
 #define OPTION1 1
 #define OPTION2 2
 #define OPTION3 3
 #define OPTION4 4
 #define EMPTY 0
-#define DIGITSNUM 3
+#define DIGITS_NUM 3
 #define END 0
-#define DOUBLEDIGIT 99
+#define DOUBLE_DIGIT 99
 
 /*-------------------------------------------------------------------------
  The program organizes the army in 10 departments.
@@ -39,6 +39,7 @@ void print_enter();
 void print_star();
 void print_space();
 
+
 void armyOrganization();
 int getWarriorsNum();
 int calculateDepartment(int WarriorNumber);
@@ -48,43 +49,50 @@ void nonEmptyDepartments(int departments[], int DepartmentsAmount);
 void printDepartments(int departments[], int DepartmentsAmount);
 double departmentAvgSize(int departments[], int DepartmentsAmount,
                          int nonEmptyDepNum);
+void chooseOption(int WarriorNumber, int departments[],
+                  int DepartmentAmount);
 
 
-//organizes the army and prints by request.
-void armyOrganization(){
-    int departments[DEPNUM] = {0};//the departments
-    int WarriorNumber = 0;// the number of each soldier
-    
-    print_warriors_details();
-    WarriorNumber = getWarriorsNum(departments, DEPNUM);
-    
-    //get numbers until gets num between 1-4.
-    while(WarriorNumber > DOUBLEDIGIT){
-        
-        departments[calculateDepartment(WarriorNumber)]++;
-        WarriorNumber = getWarriorsNum(departments, DEPNUM);
-    }
-    //checks what the user chose and prints the data.
+
+void chooseOption(int WarriorNumber, int departments[],
+                  int DepartmentAmount){
     if (WarriorNumber == OPTION1) {
-        calculatesArmySize(departments, DEPNUM);
+        calculatesArmySize(departments, DepartmentAmount);
         return;
     }
     if (WarriorNumber == OPTION2) {
-        calculatesLargestDepartment(departments, DEPNUM);
+        calculatesLargestDepartment(departments, DepartmentAmount);
         return;
     }
     if (WarriorNumber == OPTION3) {
-        nonEmptyDepartments(departments, DEPNUM);
+        nonEmptyDepartments(departments, DepartmentAmount);
         return;
     }
     if (WarriorNumber == OPTION4) {
-        printDepartments(departments, DEPNUM);
+        printDepartments(departments, DepartmentAmount);
         return;
     }
+    return;
+}
+
+//organizes the army and prints by request.
+void armyOrganization(){
+    int departments[DEP_NUM] = {0};//the departments
+    int WarriorNumber = 0;// the number of each soldier
     
+    print_warriors_details();
+    WarriorNumber = getWarriorsNum(departments, DEP_NUM);
     
+    //get numbers until gets num between 1-4.
+    while(WarriorNumber > DOUBLE_DIGIT){
+        
+        departments[calculateDepartment(WarriorNumber)]++;
+        WarriorNumber = getWarriorsNum(departments, DEP_NUM);
+    }
+    //checks what the user chose and prints the data.
     
-                                                                           
+    chooseOption(WarriorNumber, departments, DEP_NUM);
+                                                        
     return;
 }
 
@@ -159,6 +167,7 @@ void calculatesLargestDepartment(int departments[], int DepartmentsAmount){
     print_biggest_platoon_and_size(MaxDepartment, MaxSoldiers);
     return;
 }
+
 //calculates the number of the soldiers in the army.
 void calculatesArmySize(int departments[], int DepartmentsAmount){
     int Sum = 0;
@@ -169,11 +178,12 @@ void calculatesArmySize(int departments[], int DepartmentsAmount){
     print_army_size(Sum);
     return;
 }
+
 //calculate the department of each soldier by the sum of the digits.
 int calculateDepartment(int WarriorNumber){
     int Sum = 0;
     
-    for (int i=0; i<DIGITSNUM; i++) {
+    for (int i=0; i<DIGITS_NUM; i++) {
         Sum += WarriorNumber%10;
         WarriorNumber /= 10;
     }
@@ -188,11 +198,6 @@ int getWarriorsNum(){
     
     return WarriorNumber;
 }
-
-
-
-
-
 
 int main()
 {
